@@ -1,0 +1,207 @@
+<?php
+	include_once "../connt.php";
+	
+	if(isset($_GET['edit_blog'])){
+		if($_GET['edit_blog']=='yes'){
+			$id_artikel=$_GET['id'];
+			$query=mysqli_query($koneksi,"select * from blog where id_artikel='$id_artikel'");
+			if(mysqli_num_rows($query)==1){
+				$data=mysqli_fetch_array($query);
+			}
+		}
+	}
+	
+?>
+
+<div class="row">
+	<div class="col-lg-12">
+		<h1 class="page-header">Post &raquo; Ubah Artikel</h1>
+	</div>
+</div>
+
+<div class="row">
+	<div class="col-lg-12">
+	<button class="btn btn-danger" type="button" onclick="back()"><span class="glyphicon glyphicon glyphicon-arrow-left" aria-hidden="true"></span></button>
+	<div id="confirm_content"></div>
+	<form target="" method="post">
+		<div class="form-group">
+			<label for="judul">Judul Artikel :</label>
+			<input type="text" class="form-control" name="judul" value="<?php echo $data['tittle'];?>">
+		</div>
+		
+				<div class="form-group">
+					<label for="judul">Category :</label>
+					<div class="form-inline">
+						<div class="form-group">
+							<select class="form-control" name="category" id="category" >
+							<?php
+								$query=mysqli_query($koneksi,"select * from bcategory");
+								if(mysqli_num_rows($query)!=0){
+									while($kategory=mysqli_fetch_array($query)){
+										echo "<option "; 
+										if($kategory['id_category']==$data['id_category']){echo "value='".$kategory['id_category']."' selected='selected'";}
+											else {echo "value='".$kategory['id_category']."'";} 
+										echo ">$kategory[category]</option>";
+									}
+								}
+								else echo "<option value='-'>-</option>";
+							?>
+							</select>
+						</div>
+						<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#modal_category"><i class="fa fa-fw fa-plus"></i></button>
+						<div id="modal_alert"></div>
+					</div>
+				</div>
+		<div class="form-group">
+			<label for="textarea">Isi Artikel :</label>
+			<textarea id="content" class="form-control" name="isi"><?php echo $data['content'];?></textarea>
+		</div>
+		<div class="form-group">
+			<label name="tag" for="textarea">Filter :</label>
+			<div class="row">
+				<div class="col-xs-8">
+				<textarea  id="filter" class="form-control" name="filter" rows="1"><?php echo $data['filter'];?></textarea>
+				</div>
+			</div>
+		</div>
+		<hr/>
+		<div class="form-group pull-right">
+			<button type="button" id="submit_content" class="btn btn-md btn-primary active">Simpan</button>
+			<button type="reset" class="btn btn-md btn-danger active">Reset</button>
+		</div>
+	</form>
+	</div>
+</div>
+
+
+<!-- Button trigger modal -->
+<div class="modal fade" id="modal_category" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel">
+	  <div class="modal-dialog" role="document">
+		<div class="modal-content">
+		  <div class="modal-header">
+			<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+			<h4 class="modal-title" id="exampleModalLabel">Tambah Kategory</h4>
+		  </div>
+		  <div class="modal-body">
+			<form>
+			  <div class="form-inline">
+				  <div class="form-group">
+					<input type="text" class="form-control" name="tambah">
+					<button id="add_category" type="button" class="btn btn-primary" data-toggle="modal" data-target="#add_category"><i class="fa fa-fw fa-plus"></i></button>
+				  </div>
+
+			  </div>
+			  <hr/>
+			  <?php
+				$sql=mysqli_query($koneksi,"select * from bcategory");
+								if(mysqli_num_rows($sql)!=0){
+									while($cat=mysqli_fetch_array($sql)){
+										echo '
+											<div class="form-inline">
+												  <div class="form-group">
+													<input type="text" class="form-control" name="'.$cat["id_category"].'" value="'.$cat["category"].'">
+													<button type="button" class="btn btn-info" onclick="rename('.$cat['id_category'].')">
+													<i class="fa fa-fw fa-pencil"></i></button>
+													<button type="button" class="btn btn-danger" onclick="del('.$cat['id_category'].')"><i class="fa fa-fw fa-remove"></i></button>
+												  </div>
+											</div>
+											<br/>
+										';
+									}
+								}
+			  ?>
+			</form>
+		  </div>
+		</div><!-- /.modal-content -->
+	</div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+
+
+<script src="../js/tinymce/tinymce.min.js"></script>
+<script src="../js/jquery.min.js"></script>
+<!-- Just be careful that you give correct path to your tinymce.min.js file, above is the default example -->
+<script type="text/javascript">
+	function back(){
+		window.history.back();
+	};
+
+     tinymce.init({
+        selector: "textarea#content",theme: "modern",height : "250",
+        plugins: [
+             "advlist autolink link image lists charmap print preview hr anchor pagebreak",
+             "searchreplace wordcount visualblocks visualchars insertdatetime media nonbreaking",
+             "table contextmenu directionality emoticons paste textcolor responsivefilemanager"
+       ],
+       toolbar1: "undo redo | bold italic underline | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | styleselect",
+       toolbar2: "| responsivefilemanager | link unlink anchor | image media | forecolor backcolor  | print preview code ",
+       image_advtab: true ,
+       
+       external_filemanager_path:"../js/filemanager/",
+       filemanager_title:"Responsive Filemanager" ,
+       external_plugins: { "filemanager" : "../filemanager/plugin.min.js"}
+    });
+	
+$(document).ready(function(){
+	$("#add_category").on('show.bs.modal', function (){
+		var tambah_category	= $('input[name=tambah]').val();
+		$.ajax({
+			type	:"POST",
+			url		:"../kontrol/crud_admin/crud_category.php",
+			data	:"crud=add&crud_category="+tambah_category,
+			success	: function(data){
+					$("#category").html(data);
+					location.reload();
+					$("#modal_alert").html("<div class='alert alert-success' role='alert'>Category Berhasil Ditambah</div>");
+			}
+		})
+	});
+	
+	$("#submit_content").click(function(){
+		var id_artikel =<?php echo $id_artikel;?>;
+		var id_anggota	=<?php echo $_SESSION['id_user'];?>;
+		var judul	= $('input[name=judul]').val();
+		var category = $('select[name=category]').val();
+		var content	= tinymce.get("content").getContent();
+		var filter	= $('textarea[name=filter]').val();
+		console.log(id_artikel,id_anggota);
+		$.ajax({
+			type	:"POST",
+			url		:"../kontrol/crud_admin/crud_content.php",
+			data	:"crud=edit&id_artikel="+id_artikel+"&id_anggota="+id_anggota+"&judul="+judul+"&category="+category+"&content="+content+"&filter="+filter,
+			success	: function(data){
+					$("#confirm_content").html(data);
+					$('html,body').animate({scrollTop:0},0);
+			}
+		})
+	});
+})
+
+function rename(id){
+		var rename_category	= $('input[name='+id+']').val();
+		$.ajax({
+			type	:"POST",
+			url		:"../kontrol/crud_admin/crud_category.php",
+			data	:"crud=rename&crud_category="+rename_category+"&id="+id,
+			success	: function(data){
+					$("#category").html(data);
+					 $('#modal_category').modal('toggle');
+					$("#modal_alert").html("<div class='alert alert-success' role='alert'>Category Berhasil Dirubah</div>");
+			}
+		})
+	};
+	
+function del(id){
+		$.ajax({
+			type	:"POST",
+			url		:"../kontrol/crud_admin/crud_category.php",
+			data	:"crud=delete&id="+id,
+			success	: function(data){
+					$("#category").html(data);
+					 $('#modal_category').modal('toggle');
+					$("#modal_alert").html("<div class='alert alert-success' role='alert'>Category Berhasil dihapus</div>");
+			}
+		})
+	};
+	
+</script>
+

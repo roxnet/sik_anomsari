@@ -1,0 +1,342 @@
+<?php
+include_once('../connt.php');
+
+session_start();
+include ('../kontrol/session_cekker.php');
+$selectUser=mysqli_query($koneksi, "SELECT nickname,profil,level_user AS level FROM anggota where id_anggota='".$_SESSION['id_user']."'");
+while($user=mysqli_fetch_assoc($selectUser)){
+	$nameUser = $user['nickname'];
+	$profil = $user['profil'];
+	$level = $user['level'];
+}
+
+$pengumuman = mysqli_query($koneksi,"SELECT * 
+    FROM pengumuman 
+    ORDER BY id_pengumuman 
+    DESC LIMIT 5");
+?>
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <title>Clean Blog</title>
+
+    <!-- Bootstrap Core CSS -->
+    <link href="../css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Main CSS -->
+   <link href="../css/main.css" rel="stylesheet">
+  <!--  <link href="../css/clean-blog.css" rel="stylesheet"> -->
+
+    <!-- Custom Fonts -->
+    <link href="../fonts/font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+</head>
+
+<body>
+    <!-- Page Header -->
+    <!-- Set your background image for this header on the line below. -->
+    <div id="wrapper">
+
+        <!-- Navigation -->
+        <!-- Navigation -->
+        <nav class="navbar navbar-default navbar-custom navbar-fixed-top">
+          <div class="container">
+            <div class="container-fluid">
+                <!-- Brand and toggle get grouped for better mobile display -->
+                <div class="navbar-header page-scroll">
+                    <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+                        <span class="sr-only">Toggle navigation</span>
+                        Menu <i class="fa fa-bars"></i>
+                    </button>
+                    <a class="navbar-brand" href="index.html">Start Bootstrap</a>
+                </div>
+
+                <!-- Collect the nav links, forms, and other content for toggling -->
+                <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+                    <ul class="nav navbar-nav">
+                    <li>
+                            <a class="menup" href="layout_user.php?notif=yes">Home</a>
+                        </li>
+                        <li>
+                            <a class="menup" href="layout_blog.php?home=yes">Blog</a>
+                        </li>
+                        <li>
+                            <a class="menup" href="layout_user.php?forum=yes">Forum</a>
+                        </li>                        
+						<li>
+                            <a class="menup" href="layout_user.php?anggota=yes">Anggota</a>
+                        </li>
+						<?php 
+							if($level == 'admin'){
+						echo '<li>
+									<a class="menup" href="admin_layout.php?dashboard=yes">Admin Side <b class="glyphicon glyphicon-log-in"></b></a>
+								</li>';								
+							}
+						?>
+
+                    </ul>
+                <ul class="nav navbar-right top-nav">
+                    <ul class="nav navbar-nav">
+                     <li class="dropdown">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown"><i class="fa fa-envelope"></i> <b class="caret"></b></a>
+                    <ul class="dropdown-menu message-dropdown">
+                       
+                        <?php
+                            $chat=mysqli_query($koneksi,"
+                              SELECT id_message,GROUP_CONCAT(reply separator '<br/>') as reply,name,date as time,a.id_pesan as id_pesan
+                              FROM private_message a
+                              inner join anggota c on a.id_pengirim=c.id_anggota
+                              WHERE date =(select max(date) from private_message b WHERE a.id_pesan=b.id_pesan )
+
+                              GROUP by id_pesan
+                                ");
+                            if(mysqli_num_rows($chat)!=0){
+                              while($data=mysqli_fetch_array($chat))  {
+                                echo '
+                                 <li class="message-preview">
+                                    <a href="layout_user.php?private_chat=yes&id_chat='.$data['id_pesan'].'">
+                                        <div class="media">
+                                    <span class="pull-left">
+                                        <img class="media-object" src="http://placehold.it/50x50" alt="">
+                                    </span>
+                                    <div class="media-body">
+                                        <h5 class="media-heading"><strong>'.$data['name'].'</strong>
+                                        </h5>
+                                        <p class="small text-muted"><i class="fa fa-clock-o"></i>'.$data['time'].'</p>
+                                        <p>'.$data['reply'].'</p>
+                                    </div>
+                                   </div>
+                                        </a>
+                                                        </li>
+                                ';
+                              }
+                          }
+                        ?>
+
+                                   
+                             
+                        
+                       <!-- <li class="message-footer">
+                            <a href="layout_user.php?private_chat=yes">Read All New Messages</a>
+                        </li> -->
+                    </ul>
+                </li>
+                     <li  class="dropdown">
+                      <a class="menup"  href="#" class="dropdown-toggle" data-toggle="dropdown"><span class="glyphicon glyphicon-exclamation-sign"></span> Pengumuman <b class="caret"></b></a>
+                      <ul class="dropdown-menu">
+                      <?php while($notice = mysqli_fetch_assoc($pengumuman)){
+                                   
+                       echo '            <li>
+                                <a href="#" id="'.$notice['id_pengumuman'].'" class="view" data-toggle="modal" data-target="#modal_lihat_png"><i class="glyphicon glyphicon-info-sign"></i> '.$notice['tittle'].', <i class="pull-right"><u>( '.date("d F Y", strtotime($notice['created_at'])).' )</u></i></a>
+                            </li>
+                            <li class="divider"></li> ';             }?>
+
+                          </ul>
+                      </li>
+                      <li class="dropdown">
+                          <a class="menup" href="#" class="dropdown-toggle" data-toggle="dropdown"><img class="img-rounded " src="../images/profil/<?php echo $profil ;?>" width="30" style="border:2px solid white;"> <u><?php echo $nameUser;?></u> <b class="caret"></b></a>
+                          <ul class="dropdown-menu">
+                              <li>
+                                  <a href="#"><i class="fa fa-fw fa-user"></i> Profile</a>
+                              </li>
+                              <li>
+                                  <a href="#"><i class="fa fa-fw fa-envelope"></i> Inbox</a>
+                              </li>
+                              <li>
+                                  <a href="#"><i class="fa fa-fw fa-gear"></i> Settings</a>
+                              </li>
+                              <li class="divider"></li>
+                              <li>
+                                  <a href="../kontrol/logout.php"><i class="fa fa-fw fa-power-off"></i> Log Out</a>
+                              </li>
+                          </ul>
+                      </li>
+                </ul></ul>
+                </div>
+                <!-- /.navbar-collapse -->
+            </div>
+          </div>
+            <!-- /.container -->
+        </nav>
+
+        <!--
+        User Profile Sidebar by @keenthemes
+        A component of Metronic Theme - #1 Selling Bootstrap 3 Admin Theme in Themeforest: http://j.mp/metronictheme
+        Licensed under MIT
+        -->
+        <?php
+        if (isset($_GET['blog']) || isset($_GET['forum']) || isset($_GET['anggota'])){
+          if($_GET['blog']=='yes'){
+            echo "
+            <div style='margin-top:80px'>
+            </div>";
+          }
+          include_once ('../kontrol/navigasi_user.php');
+        }
+        if(!isset($_GET['blog']) && !isset($_GET['forum']) && !isset($_GET['anggota']))
+        {
+
+       echo'
+        
+        <div class="container" id="change">
+          <div class="profile">
+            <div class="col-md-3">
+              <div class="profile-sidebar">
+                <div class="profile-col">
+                <!-- SIDEBAR USERPIC -->
+                  <div class="profile-userpic">
+                    <img src="../images/profil/'.$profil.'" class="img-responsive" alt="">
+                  </div>
+                  <!-- END SIDEBAR USERPIC -->
+                  <!-- SIDEBAR USER TITLE -->
+                  <div class="profile-usertitle">
+                    <div class="profile-usertitle-name">
+                      '.$nameUser.'
+                    </div>
+                    <div class="profile-usertitle-job">
+                      '.$level.'
+                    </div>
+                  </div>
+                </div>
+                <div class="profile-usermenu">
+                  <ul class="nav">
+                    <li class="active same-class">
+                      <a href="layout_user.php?notif=yes">
+                      <i class="glyphicon glyphicon-home"></i>
+                      Pemberitahuan </a>
+                    </li>
+                    <li>
+                      <a href="layout_user.php?tentang=yes">
+                      <i class="glyphicon glyphicon-ok"></i>
+                      Tentang </a>
+                    </li>
+                    <li>
+                      <a href="layout_user.php?edit_profile=yes">
+                      <i class="glyphicon glyphicon-user"></i>
+                      Edit Profile </a>
+                    </li>
+                    <li>
+                      <a href="#">
+                      <i class="glyphicon glyphicon-flag"></i>
+                      Help </a>
+                    </li>
+                  </ul>
+                </div>
+                <!-- END MENU -->
+              </div>
+            </div>
+            <div class="col-md-9">
+              <div class="profile-content">
+                
+                  ';
+                  include_once ('../kontrol/navigasi_user.php');
+        echo '
+                
+              </div>
+            </div>
+          </div>
+        </div>';
+        }
+          ?>
+
+        <!-- Footer -->
+        <footer>
+            <div class="container">
+                <div class="row">
+                    <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                        <ul class="list-inline text-center">
+                            <li>
+                                <a href="#">
+                                    <span class="fa-stack fa-lg">
+                                        <i class="fa fa-circle fa-stack-2x"></i>
+                                        <i class="fa fa-twitter fa-stack-1x fa-inverse"></i>
+                                    </span>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="#">
+                                    <span class="fa-stack fa-lg">
+                                        <i class="fa fa-circle fa-stack-2x"></i>
+                                        <i class="fa fa-facebook fa-stack-1x fa-inverse"></i>
+                                    </span>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="#">
+                                    <span class="fa-stack fa-lg">
+                                        <i class="fa fa-circle fa-stack-2x"></i>
+                                        <i class="fa fa-github fa-stack-1x fa-inverse"></i>
+                                    </span>
+                                </a>
+                            </li>
+                        </ul>
+                        <p class="copyright text-muted">Copyright &copy; Your Website 2017</p>
+                    </div>
+                </div>
+            </div>
+        </footer>
+      </div>
+
+    <!-- jQuery -->
+    <script src="../js/jquery.min.js"></script>
+
+    <!-- Bootstrap Core JavaScript -->
+    <script src="../js/bootstrap.min.js"></script>
+
+    <!-- Contact Form JavaScript -->
+    <script src="../js/jqBootstrapValidation.js"></script>
+    <script src="../js/contact_me.js"></script>
+
+    <!-- Theme JavaScript -->
+    <script src="../js/clean-blog.min.js"></script>
+
+    <script>
+     /*   $(window).load(function() {
+        $('.nav li a').click(function(e) {
+
+            $('.nav li').removeClass('active');
+
+            var $parent = $(this).parent();
+            if (!$parent.hasClass('active')) {
+                $parent.addClass('active');
+            }
+            e.preventDefault();
+        });
+    }); 
+  $(document).ready(function(){
+       $('#blog').on('click',function(event){
+        event.preventDefault();
+           $.ajax({  
+              url:"layout_user.php",  
+              type:"GET",  
+              data:"blog=yes",
+              success:function(){  
+               //$('#add_form')[0].reset();  
+               
+                 window.location.href = "layout_user.php?blog=yes";
+              }  
+               });  
+       })*/
+     
+
+    </script>
+
+</body>
+
+</html>
