@@ -45,13 +45,33 @@
 				
 else if(isset($_GET['edit_profile'])){
 	 	if($_GET['edit_profile']=='yes'){
-			include_once "user/edit_user.php";
+			include_once "user/edit_user.php"; 
 		}}
+		
+else if(isset($_GET['ubah_password'])){				//ubah password  
+	 	if($_GET['ubah_password']=='yes'){
+			include_once "user/ubah_pass.php";
+		}}
+		
+else if(isset($_GET['ganti_profil'])){				//ganti_profil 
+	 	if($_GET['ganti_profil']=='yes'){
+			include_once "user/ganti_foto_profil.php";
+		}}		
+		
+		
 if(isset($_GET['private_chat'])){
 		if($_GET['private_chat']=='yes'){
 			include_once "crud_admin/CRUDanggota/private_chat.php";
 	}}
 		
-
+		else if(isset($_GET['gallery'])){  ///Galeri
+	 	if($_GET['gallery']=='yes'){
+			include_once "gallery/gallery.php";
+		}}		
+		
+		else if(isset($_GET['lihat_album'])){  
+	 	if($_GET['lihat_album']=='yes'){
+			include_once "gallery/lihat_album.php";
+		}}
 		
 ?>

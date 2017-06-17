@@ -16,7 +16,7 @@
                            
                             <div class="panel-heading" style="border-radius:10px;text-align:center;font-size: 2em;">
                                <i class="glyphicon glyphicon-user"></i>   
-									<?php $pedf = mysqli_query($koneksi, "SELECT * FROM pendaftar"); 
+									<?php $pedf = mysqli_query($koneksi, "SELECT * FROM anggota WHERE konfirmasi = 'notyet'"); 
 										echo $count=mysqli_num_rows($pedf) ;
 									?>
 							   <h3 class="panel-title"> Pendaftar</h3>
