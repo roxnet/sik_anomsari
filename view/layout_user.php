@@ -64,7 +64,7 @@ $pengumuman = mysqli_query($koneksi,"SELECT *
                         <span class="sr-only">Toggle navigation</span>
                         Menu <i class="fa fa-bars"></i>
                     </button>
-                    <a class="navbar-brand" href="index.html">Start Bootstrap</a>
+                    <a class="navbar-brand" href="layout_user.php?notif=yes">Web Keluarga</a>
                 </div>
 
                 <!-- Collect the nav links, forms, and other content for toggling -->
@@ -74,7 +74,7 @@ $pengumuman = mysqli_query($koneksi,"SELECT *
                             <a class="menup" href="layout_user.php?notif=yes">Home</a>
                         </li>
                         <li>
-                            <a class="menup" href="layout_blog.php?home=yes">Blog</a>
+                            <a class="menup" href="layout_user.php?blog=yes">Blog</a>
                         </li>
                         <li>
                             <a class="menup" href="layout_user.php?forum=yes">Forum</a>
@@ -82,13 +82,10 @@ $pengumuman = mysqli_query($koneksi,"SELECT *
 						<li>
                             <a class="menup" href="layout_user.php?anggota=yes">Anggota</a>
                         </li>
-						<?php 
-							if($level == 'admin'){
-						echo '<li>
-									<a class="menup" href="admin_layout.php?dashboard=yes">Admin Side <b class="glyphicon glyphicon-log-in"></b></a>
-								</li>';								
-							}
-						?>
+						<li>
+                            <a class="menup" href="layout_user.php?gallery=yes">Galeri</a>
+                        </li>
+						
 
                     </ul>
                 <ul class="nav navbar-right top-nav">
@@ -162,6 +159,14 @@ $pengumuman = mysqli_query($koneksi,"SELECT *
                                   <a href="#"><i class="fa fa-fw fa-gear"></i> Settings</a>
                               </li>
                               <li class="divider"></li>
+							  <?php 
+									if($level == 'admin'){
+								echo '<li>
+											<a class="menup" href="admin_layout.php?dashboard=yes">Admin Side <b class="glyphicon glyphicon-log-in"></b></a>
+										</li>';								
+									}
+								?>
+							  <li class="divider"></li>
                               <li>
                                   <a href="../kontrol/logout.php"><i class="fa fa-fw fa-power-off"></i> Log Out</a>
                               </li>
@@ -177,19 +182,19 @@ $pengumuman = mysqli_query($koneksi,"SELECT *
 
         <!--
         User Profile Sidebar by @keenthemes
-        A component of Metronic Theme - #1 Selling Bootstrap 3 Admin Theme in Themeforest: http://j.mp/metronictheme
+        A component of Metronic Theme - #1 Selling Bootstrap 3 Admin Theme in Themeforest: http://j.mp/metronictheme  
         Licensed under MIT
         -->
         <?php
-        if (isset($_GET['blog']) || isset($_GET['forum']) || isset($_GET['anggota'])){
-          if($_GET['blog']=='yes'){
+        if (isset($_GET['blog']) || isset($_GET['forum'])  || isset($_GET['Threads'])   || isset($_GET['bahasan']) || isset($_GET['anggota']) || isset($_GET['gallery'])|| isset($_GET['lihat_album'])){
+          //if($_GET['blog']=='yes'){
             echo "
             <div style='margin-top:80px'>
             </div>";
-          }
+          //}
           include_once ('../kontrol/navigasi_user.php');
         }
-        if(!isset($_GET['blog']) && !isset($_GET['forum']) && !isset($_GET['anggota']))
+        if(!isset($_GET['blog']) && !isset($_GET['forum'])  && !isset($_GET['Threads'])   && !isset($_GET['bahasan']) && !isset($_GET['anggota']) && !isset($_GET['gallery']) && !isset($_GET['lihat_album']))
         {
 
        echo'
@@ -224,12 +229,22 @@ $pengumuman = mysqli_query($koneksi,"SELECT *
                     <li>
                       <a href="layout_user.php?tentang=yes">
                       <i class="glyphicon glyphicon-ok"></i>
-                      Tentang </a>
+                      Profil </a>
                     </li>
                     <li>
                       <a href="layout_user.php?edit_profile=yes">
                       <i class="glyphicon glyphicon-user"></i>
-                      Edit Profile </a>
+                      Edit Profil </a>
+                    </li>                    
+					<li>
+                      <a href="layout_user.php?ganti_profil=yes">
+                      <i class="glyphicon glyphicon-picture"></i>
+                      Ganti Foto Profil </a>
+                    </li>
+                    <li>
+                      <a href="layout_user.php?ubah_password=yes">
+                      <i class="glyphicon glyphicon glyphicon-cog"></i>
+                      Ubah password </a>
                     </li>
                     <li>
                       <a href="#">
@@ -292,7 +307,20 @@ $pengumuman = mysqli_query($koneksi,"SELECT *
             </div>
         </footer>
       </div>
-
+	<!-- Button trigger modal 2     -------------------------------------------------------------------------------------------MODAL LIHAT PENGUMUMAN-->
+<div class="modal fade" id="modal_lihat_png" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel">
+	  <div class="modal-dialog" role="document">
+		<div class="modal-content">
+		  <div class="modal-header">
+			<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+			<h4 class="modal-title" id="exampleModalLabel">Pengumuman !</h4>
+		  </div>
+			<div id="paper">
+			
+			</div>
+		 </div>
+		</div><!-- /.modal-content -->
+	</div><!-- /.modal-dialog -->
     <!-- jQuery -->
     <script src="../js/jquery.min.js"></script>
 
@@ -336,6 +364,36 @@ $pengumuman = mysqli_query($koneksi,"SELECT *
      
 
     </script>
+	 <script>
+        $(window).load(function() {
+        $('.nav li a').click(function(e) {
+
+            $('.nav li').removeClass('active');
+
+            var $parent = $(this).parent();
+            if (!$parent.hasClass('active')) {
+                $parent.addClass('active');
+            }
+            e.preventDefault();
+        });
+    });
+
+    </script>
+	<script>
+	$(document).ready(function(){		
+		$(".view").on('click', function (){
+		var id	= $(this).attr("id");
+		console.log(id);
+		$.ajax({
+			method	:"POST",
+			url		:"../kontrol/crud_admin/crud_pengumuman.php",
+			data	:"crud=view&id="+id,
+			success	: function(data){
+					$("#paper").html(data);
+			}
+		})
+	});});
+	 </script>
 
 </body>
 

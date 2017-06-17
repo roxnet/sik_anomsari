@@ -7,15 +7,15 @@
 		//Forum
 		
 		if($_POST['crud']=='add'){
-			$forum = $_POST['forum'];
-			$ket = $_POST['ket'];
-			$creator = $_POST['creator']; 
-			$fkategory = $_POST['fkategory'];
-			$status = "aktif";
+			$forum = mysqli_real_escape_string($koneksi,$_POST['forum']);
+			$ket = mysqli_real_escape_string($koneksi,$_POST['ket']);
+			$creator = mysqli_real_escape_string($koneksi,$_POST['creator']); 
+			$fkategory = mysqli_real_escape_string($koneksi,$_POST['fkategory']);
+			$status = "online";
 			$create = date("Y-m-d");
 			
-			$sql = mysqli_query($koneksi, "INSERT INTO forum(id_fkategori, forum, keterangan, id_creator, status, created_at) 
-												VALUES('$fkategory', '$forum', '$ket', '$creator', '$status', '$create')");
+			$sql = mysqli_query($koneksi, "INSERT INTO forum(id_fkategory, judul_forum, keterangan, id_creator, status, created_at, edited_at) 
+												VALUES('$fkategory', '$forum', '$ket', '$creator', '$status', '$create','$create')");
 			if($sql){
 				echo"ok";
 			}else echo "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$create";
@@ -46,7 +46,7 @@
 					  </div>
 					  <div class="form-group col-md-12">
 						<label for="inputEmail3" class="col-sm-4 control-label">Nama Forum</label>
-						<input type="text" class="form-control" name="eforum" value="'.$forum['forum'].'">
+						<input type="text" class="form-control" name="eforum" value="'.$forum['judul_forum'].'">
 					  </div>
 					  <div class="form-group col-md-12">
 						<label for="inputEmail3" class="col-sm-2 control-label">Keterangan</label>
@@ -54,12 +54,12 @@
 					  </div>
 					  <div class="form-group col-md-12">
 						<select class="form-control" name="status">';
-							if($forum['status']=="aktif"){
-								echo '<option value="aktif">aktif</option>
-										<option value="nonaktif">nonaktif</option>';
+							if($forum['status']=="online"){
+								echo '<option value="online">online</option>
+										<option value="offline">offline</option>';
 							}else {
-								echo '<option value="nonaktif">nonaktif</option>
-										<option value="aktif">aktif</option>';
+								echo '<option value="offline">offline</option>
+										<option value="online">online</option>';
 							}
 	echo '				</select>
 					  </div>
@@ -107,10 +107,10 @@
 		}
 		else if($_POST['crud']=='update'){
 			$id = $_POST['id'];
-			$forum = $_POST['forum'];
-			$ket = $_POST['ket'];
-			$fkategory = $_POST['fkategory'];
-			$status = $_POST['status'];
+			$forum = mysqli_real_escape_string($koneksi,$_POST['forum']);
+			$ket = mysqli_real_escape_string($koneksi,$_POST['ket']);
+			$fkategory = mysqli_real_escape_string($koneksi,$_POST['fkategory']);
+			$status = mysqli_real_escape_string($koneksi,$_POST['status']);
 			$edited = date("Y-m-d");
 			
 			$sql = mysqli_query($koneksi, "UPDATE forum SET id_fkategori='$fkategory', forum='$forum', keterangan='$ket', status='$status', edited_at='$edited' WHERE id_forum='$id'");
@@ -123,15 +123,15 @@
 			$query=mysqli_query($koneksi,"SELECT * FROM forum WHERE id_forum='$idf'");
 				if(mysqli_num_rows($query)!=0){
 					while($forum=mysqli_fetch_array($query)){
-					$query2=mysqli_query($koneksi,"SELECT category FROM fcategory WHERE id_category='".$forum['id_fkategori']."'");
-					//$query3=mysqli_query($koneksi,"SELECT name FROM anggota WHERE id_anggota='".$forum['id_creator']."'");
+					$query2=mysqli_query($koneksi,"SELECT category FROM fcategory WHERE id_category='".$forum['id_fkategory']."'");
+					$query3=mysqli_query($koneksi,"SELECT name FROM anggota WHERE id_anggota='".$forum['id_creator']."'");
 
 						echo '<div class="modal-body">
 						  <div class="table-responsive">
 							<table class="table table-border">
 							<tr>
 								<td>Forum</td>
-								<td>: '.$forum['forum'].'</td>
+								<td>: '.$forum['judul_forum'].'</td>
 							<tr>
 							<tr>
 								<td>Kategori</td>
@@ -146,19 +146,19 @@
 							<tr>
 							<tr>
 								<td>Creator</td>
-								<td>: ';//while($kat=mysqli_fetch_array($query2)){
-										//	echo $kat['category'];
+								<td>: '; $by_creator = mysqli_fetch_array($query3);
+											echo $by_creator['name'];
 										//}
 						echo'	</td>
 							<tr>
 							<tr>
 								<td>Created at</td>
-								<td>: '.$forum['created_at'].'</td>
+								<td>: '.date("d F Y", strtotime($forum['created_at'])).'</td>
 							<tr>
 							<tr>
 								<td>Edited at</td>
 								<td>: ';
-									if($forum['edited_at']!="0000-00-00") echo $forum['edited_at'];
+									if($forum['edited_at']!="0000-00-00") echo date("d F Y", strtotime($forum['edited_at']));
 						echo   '</td>
 							<tr>
 							<tr>
@@ -205,9 +205,9 @@
 		
 		if($_POST['crud']=='addTread'){
 			$id_forum = $_POST['forum'];
-			$topic = $_POST['topik'];
-			$content = $_POST['content'];
-			$creator = $_POST['creator']; 
+			$topic = mysqli_real_escape_string($koneksi,$_POST['topik']);
+			$content = mysqli_real_escape_string($koneksi,$_POST['content']);
+			$creator = mysqli_real_escape_string($koneksi,$_POST['creator']); 
 			$create = date("Y-m-d");
 			$image = "Emty";
 			
@@ -224,7 +224,7 @@
 		
 		
 		if($_POST['crud']=='addfcat'){
-			$fcategory=$_POST['tambah_fcategory'];
+			$fcategory=mysqli_real_escape_string($koneksi,$_POST['tambah_fcategory']);
 			$sql=mysqli_query($koneksi,"INSERT INTO fcategory (category) VALUES('".$fcategory."')");
 			if($sql){
 				$query=mysqli_query($koneksi,"select * from fcategory");
@@ -237,7 +237,7 @@
 		}
 		
 		else if($_POST['crud']=='renamef'){
-			$fcategory=$_POST['rename_fcategory'];
+			$fcategory=mysqli_real_escape_string($koneksi,$_POST['rename_fcategory']);
 			$id_fcategory=$_POST['id'];
 			$sql=mysqli_query($koneksi,"UPDATE fcategory SET category='".$fcategory."' where id_category=$id_fcategory ");
 			if($sql){
@@ -276,7 +276,9 @@
 							<tr>
 								<th>No</th>
 								<th>Forum</th>
+								<th>by</th>
 								<th>Created at</th>
+								<th>Status</th>
 								<th>Aksi</th>
 							</tr>
 						';
@@ -289,11 +291,15 @@
 							$no = 1; // mewakili data dari nomor 1
 							while($row = mysqli_fetch_assoc($sql)){ // fetch query yang sesuai ke dalam array
 								//if($row['status']=="aktif"){
-								echo '
+								$creator = mysqli_query($koneksi,"SELECT * FROM anggota WHERE id_anggota = '".$row['id_creator']."' ");
+								$by_creator = mysqli_fetch_array($creator);
+							echo '
 								<tr>
 									<td>'.$no.'</td>
-									<td width="35%"><a href="admin_layout.php?Threads=yes&id='.$row['id_forum'].'" >'.$row['forum'].'</a></td>
-									<td width="35%">'.$row['created_at'].'</td>
+									<td width="35%"><a href="admin_layout.php?Threads=yes&id='.$row['id_forum'].'" >'.$row['judul_forum'].'</a></td>
+									<td width="20%">'.$by_creator["name"].'</td>
+									<td width="15%">'.$row['status'].'</td>
+									<td width="15%">'.date("d F Y", strtotime($row['created_at'])).'</td>
 									<td width="20%">
 										
 										<a href="" data-toggle="modal" class="btn btn-primary btn-sm editf" data-target="#modal_editforum" onclick="edit2('.$row['id_forum'].')"><span class="glyphicon glyphicon-edit" aria-hidden="true"></span></a>
@@ -347,7 +353,9 @@
 							<tr>
 								<th>No</th>
 								<th>Forum</th>
+								<th>by</th>
 								<th>Created at</th>
+								<th>Status</th>
 								<th>Aksi</th>
 							</tr>			
 				
@@ -355,13 +363,16 @@
 					
 						$no = 1; // mewakili data dari nomor 1
 						while($row = mysqli_fetch_assoc($sql)){ // fetch query yang sesuai ke dalam array
-						
-						if($row["id_fkategori"]==$select){
+						$creator = mysqli_query($koneksi,"SELECT * FROM anggota WHERE id_anggota = '".$row['id_creator']."' ");
+						$by_creator = mysqli_fetch_array($creator);
+						if($row["id_fkategory"]==$select){
 							echo '
 							<tr>
 									<td>'.$no.'</td>
-									<td width="35%"><a href="admin_layout.php?Threads=yes&id='.$row['id_forum'].'" >'.$row['forum'].'</a></td>
-									<td width="35%">'.$row['created_at'].'</td>
+									<td width="35%"><a href="admin_layout.php?Threads=yes&id='.$row['id_forum'].'" >'.$row['judul_forum'].'</a></td>
+									<td width="20%">'.$by_creator["name"].'</td>
+									<td width="15%">'.$row['status'].'</td>
+									<td width="15%">'.date("d F Y", strtotime($row['created_at'])).'</td>
 									<td width="20%">
 										
 										<a href="" data-toggle="modal" class="btn btn-primary btn-sm editf" data-target="#modal_editforum" onclick="edit3('.$row['id_forum'].')"><span class="glyphicon glyphicon-edit" aria-hidden="true"></span></a>
@@ -370,10 +381,10 @@
 								</tr>
 							';
 							$no++; // mewakili data kedua dan seterusnya
-							}else{ 
-								echo '<tr><td colspan="4"><center>Data Tidak Ada.</center></td></tr>'; // jika tidak ada entri di database maka tampilkan 'Data Tidak Ada.'
 							}
-						}
+						}if ($no == 1){ 
+								echo '<tr><td colspan="4"><center>Tidak Ada Data.</center></td></tr>'; // jika tidak ada entri di database maka tampilkan 'Data Tidak Ada.'
+							}
 				echo '</table>
 				<script>
 						function edit3(id){
@@ -409,6 +420,205 @@
 				';
 				}	
 		}
+		
+		else if($_POST['crud']=='view_bahasan'){   ////lihat bahasan
+			$id_bahasan = $_POST['id'];
+
+			$take_bahasan = mysqli_query($koneksi,"SELECT * FROM bahasan_forum WHERE id_bahasan = '$id_bahasan'");
+			$bahasan = mysqli_fetch_array($take_bahasan);
+			
+			echo '
+				<div style="padding:10px">
+				<table>
+				<tr>
+					<td>Topik bahasan </td><td> : '.$bahasan['topic'].'</td>
+				</tr>
+				<tr>
+					<td colspan="2"><hr/></td>
+				</tr>
+				<tr>
+					<td>Content </td><td> : '.$bahasan['content'].'</td>
+				</tr>
+				<tr>
+					<td colspan="2"><hr/></td>
+				</tr>
+				<tr>
+					<td>Creator </td><td> : '; 
+					
+					
+												$panggil_creatornya = mysqli_query($koneksi, "SELECT * FROM anggota WHERE id_anggota = '".$bahasan['id_creator']."'");
+											while($crtr = mysqli_fetch_assoc($panggil_creatornya)){
+												echo $crtr['nickname']." / ".$crtr['name'];
+												//echo $crtr['name'];
+											}
+					
+					
+			echo'	</td>
+				</tr>
+				<tr>
+					<td colspan="2"><hr/></td>
+				</tr>
+				<tr>
+					<td>Created at </td><td> : '.date("d F Y", strtotime($bahasan['created_at'])).'</td>
+				</tr>
+				<tr>
+					<td colspan="2"><hr/></td>
+				</tr>
+				<table>	
+				</div>
+			';
+		}
+		else if($_POST['crud']=='ctrl_comment'){   /////Tamppilan daftar komentar 
+			$id_bahasan = $_POST['id'];
+			$take_bahasan = mysqli_query($koneksi,"SELECT topic FROM bahasan_forum WHERE id_bahasan = '$id_bahasan'");
+			$showt = mysqli_fetch_array($take_bahasan);
+			echo'
+					<div style="padding:12px">
+					<h3> Topik bahasan >> '.$showt['topic'].'</h3>
+						<table class="table table-borderer">
+						<tr>
+							<th>User name</th>
+							<th>Comment</th>
+							<th>Date</th>
+							<th>Aksi</th>
+						<tr>
+			';	
+				$fcomment = mysqli_query($koneksi, "SELECT * FROM comment_forum WHERE id_bahasan='$id_bahasan' ORDER BY id_comment DESC");
+				while($fcmmt_show = mysqli_fetch_assoc($fcomment)){
+					echo '
+								
+						<tr>
+							<td width="20%">';
+												$panggil_creatornya = mysqli_query($koneksi, "SELECT * FROM anggota WHERE id_anggota = '".$fcmmt_show['id_creator']."'");
+											while($crtr = mysqli_fetch_assoc($panggil_creatornya)){
+												echo $crtr['nickname']." / ".$crtr['name'];
+												//echo $crtr['name'];
+											}							
+							
+					echo'	</td>
+							<td>'.$fcmmt_show['comment'].'</td>
+							<td width="20%">'.date("d F Y", strtotime($fcmmt_show["created_at"])).'</td>
+							<td>			
+											<a href="" onclick="destroy_comment_forum('.$fcmmt_show['id_comment'].')" id="" class="btn btn-danger btn-sm del" data-toggle="modal" data-target="#modal_del"><span class="glyphicon glyphicon-trash" aria-hidden="true"></span></a>
+							</td>
+						<tr>
+						
+						
+					
+					';
+				}
+			echo'</table></div>
+			
+				<script>
+						
+							function destroy_comment_forum(id){
+								console.log(id);
+								$.ajax({
+									type	:"POST",
+									url		:"../kontrol/crud_admin/crud_forum.php",
+									data	:"crud=destroycommentBahasan&id="+id,
+									success	: function(data){
+											if (data=="destroy sukses"){
+													location.reload();
+											}
+									}
+								})
+							}; 
+						</script>
+			
+			';
+			}
+		else if($_POST['crud']=='aditeTread'){            ////Edit bahasan Oleh Ceatornya
+			$id_bahasan = $_POST['id_bahasan'];
+			$topik = mysqli_real_escape_string($koneksi,$_POST['topik']);
+			$content = mysqli_real_escape_string($koneksi,$_POST['content']);
+			
+			$Update = mysqli_query($koneksi,"UPDATE bahasan_forum SET topic='$topik', content='$content' WHERE id_bahasan = '$id_bahasan' ");
+			echo "ok";
+		}
+		
+		else if($_POST['crud']=='delbahasanforum'){
+			$id_bahasan = $_POST['id'];
+
+			$take_bahasan = mysqli_query($koneksi,"SELECT * FROM bahasan_forum WHERE id_bahasan = '$id_bahasan'");
+			$bahasan = mysqli_fetch_array($take_bahasan);
+			
+			echo '
+				<div class="modal-body" style="padding:10px">
+				<table>
+				<tr>
+					<td>Topik bahasan </td><td> : '.$bahasan['topic'].'</td>
+				</tr>
+				<tr>
+					<td colspan="2"><hr/></td>
+				</tr>
+				<tr>
+					<td>Content </td><td> : '.$bahasan['content'].'</td>
+				</tr>
+				<tr>
+					<td colspan="2"><hr/></td>
+				</tr>
+				<tr>
+					<td>Creator </td><td> : '; 
+					
+					
+												$panggil_creatornya = mysqli_query($koneksi, "SELECT * FROM anggota WHERE id_anggota = '".$bahasan['id_creator']."'");
+											while($crtr = mysqli_fetch_assoc($panggil_creatornya)){
+												echo $crtr['nickname']." / ".$crtr['name'];
+												//echo $crtr['name'];
+											}
+					
+					
+			echo'	</td>
+				</tr>
+				<tr>
+					<td colspan="2"><hr/></td>
+				</tr>
+				<tr>
+					<td>Created at </td><td> : '.date("d F Y", strtotime($bahasan['created_at'])).'</td>
+				</tr>
+				<tr>
+					<td colspan="2"><hr/></td>
+				</tr>
+				<table>	
+				</div>
+		<div class="modal-footer">
+							<button class="btn btn-danger " onclick="destroyitbf('.$bahasan['id_bahasan'].')" >Hapus</button>
+							<button id="closed" type="button" class="btn btn-default" data-toggle="modal"  data-dismiss="modal">Batal</button>
+						</div>
+						<script>
+							function destroyitbf(id){
+								console.log(id);
+								$.ajax({
+									type	:"POST",
+									url		:"../kontrol/crud_admin/crud_forum.php",
+									data	:"crud=destroyBahasan&id="+id,
+									success	: function(data){
+											if (data=="destroy sukses"){
+													location.reload();
+											}
+									}
+								})
+							}; 
+						</script>
+						';
+					}
+				
+		
+		else if($_POST['crud']=='destroyBahasan'){
+			$id_bf=$_POST['id'];
+			$sql=mysqli_query($koneksi,"DELETE FROM bahasan_forum WHERE id_bahasan=$id_bf ");
+			if($sql){
+				echo "destroy sukses";
+			}
+		}		
+		else if($_POST['crud']=='destroycommentBahasan'){
+			$id_cbf=$_POST['id'];
+			$sql=mysqli_query($koneksi,"DELETE FROM comment_forum WHERE id_comment=$id_cbf ");
+			if($sql){
+				echo "destroy sukses";
+			}
+		}  
 		
 	}
 	

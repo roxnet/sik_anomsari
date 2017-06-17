@@ -3,7 +3,7 @@
 	
 	if(isset($_POST['crud'])){
 		if($_POST['crud']=='add'){
-			$keluarga=$_POST['crud_keluarga'];
+			$keluarga=mysqli_real_escape_string($koneksi,$_POST['crud_keluarga']);
 			$sql=mysqli_query($koneksi,"insert into keluarga (nama_keluarga) values('".$keluarga."')");
 			if($sql){
 				$query=mysqli_query($koneksi,"select * from keluarga");
@@ -16,7 +16,7 @@
 		}
 		
 		else if($_POST['crud']=='rename'){
-			$keluarga=$_POST['crud_keluarga'];
+			$keluarga=mysqli_real_escape_string($koneksi,$_POST['crud_keluarga']);
 			$id_keluarga=$_POST['id'];
 			$sql=mysqli_query($koneksi,"update keluarga set nama_keluarga='".$keluarga."' where id_keluarga=$id_keluarga ");
 			if($sql){

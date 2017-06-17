@@ -52,18 +52,18 @@ while($user=mysqli_fetch_assoc($selectUser)){
                     <span class="sr-only">Toggle navigation</span>
                     Menu <i class="fa fa-bars"></i>
                 </button>
-                <a class="navbar-brand" href="index.html">Blog Keluarga</a>
+                <a class="navbar-brand" href="../index.php">Web Keluarga</a>
             </div>
 
             <!-- Collect the nav links, forms, and other content for toggling -->
             <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
                 <ul class="nav navbar-nav navbar-left">
                     <li>
-                        <a href="layout_blog.php?home=yes">Home</a>
+                        <a href="layout_blog.php?home=yes">Blog</a>
                     </li>
                 </ul>
                 <ul class="nav navbar-nav navbar-right">
-                    <?php 
+                    <?php     ///Ini di hilangin aja pakde
                             if(isset($_SESSION['id_user'])){
                         echo '<li>
                                     <a class="menup" href="layout_user.php?notif=yes">Profile <b class="glyphicon glyphicon-log-in"></b></a>
@@ -79,6 +79,13 @@ while($user=mysqli_fetch_assoc($selectUser)){
                       </li>';
                        }
                         ?>
+						
+                
+                <ul class="nav navbar-nav">
+                    <li>
+                        <a href="login.php" style="color:white">LOGIN</a>
+                    </li>
+                </ul>
                 </ul>
             </div>
             <!-- /.navbar-collapse -->

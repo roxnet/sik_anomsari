@@ -1,6 +1,6 @@
 <?php
 	include_once "../connt.php";
-	include_once ('../../kontrol/session_cekker.php');
+	
 	$id_f =$_GET['id'];
 ?><!--
 <div class="row">
@@ -13,11 +13,11 @@
 </div>-->
 <div class="row">
 	<div class="col-lg-12">
-		<h1 class="page-header">Threads Forum  &raquo; <?php 
+		<h1 class="page-header">Bahasan Forum  &raquo; <?php 
 		
 	$forum = mysqli_query($koneksi,"SELECT * FROM forum WHERE id_forum=$id_f");
 	
-	while($forums = mysqli_fetch_array($forum)){echo $forums['forum'] ;}?></h1>
+	while($forums = mysqli_fetch_array($forum)){echo $forums['judul_forum'] ;}?></h1>
 	</div>
 </div>
 
@@ -57,13 +57,12 @@
 					<tr>
 						<th>No</th>
 						<th>Topik</th>
-						<th>Content</th>
 						<th>Comments</th>
 						<th>by</th>
 						<th>Aksi</th>
 					</tr>
 					<?php
-						$sql = mysqli_query($koneksi, "SELECT * FROM bahasan "); // jika tidak ada filter maka tampilkan semua entri
+						$sql = mysqli_query($koneksi, "SELECT * FROM bahasan_forum WHERE id_forum = '$id_f' ORDER BY id_bahasan DESC"); // jika tidak ada filter maka tampilkan semua entri
 
 						if(mysqli_num_rows($sql) == 0){ 
 							echo '<tr><td colspan="4"><center>Data Tidak Ada.</center></td></tr>'; // jika tidak ada entri di database maka tampilkan 'Data Tidak Ada.'
@@ -75,13 +74,25 @@
 								echo '
 									<tr>
 										<td>'.$no.'</td>
-										<td width="">'.$row['topic'].'</a></td>
-										<td width="">'.$row['content'].'</td>
-										<td width=""></td>
-										<td width="">'.$row['id_creator'].'</td>
+										<td width=""><a href="" class="view" id="'.$row['id_bahasan'].'" data-toggle="modal" data-target="#modal_lihat">'.$row['topic'].'</a></td>
 										<td width="">
-											<a href="" id="'.$row['id_forum'].'" class="btn btn-info btn-sm del" data-toggle="modal" data-target="#modal_del"><span class="glyphicon glyphicon-comment" aria-hidden="true"></span></a>
-											<a href="" id="'.$row['id_forum'].'" class="btn btn-danger btn-sm del" data-toggle="modal" data-target="#modal_del"><span class="glyphicon glyphicon-trash" aria-hidden="true"></span></a>
+';
+																	$banyaknya_comment = mysqli_query($koneksi,"SELECT id_comment FROM comment_forum WHERE id_bahasan = '".$row['id_bahasan']."'");
+																	$jumlh= mysqli_num_rows($banyaknya_comment);
+																	echo $jumlh;
+																	
+								echo'													<i class="glyphicon glyphicon-menu-hamburger"></i></h4>														
+										</td>
+										<td width="">';
+											$panggil_creatornya = mysqli_query($koneksi, "SELECT * FROM anggota WHERE id_anggota = '".$row['id_creator']."'");
+											while($crtr = mysqli_fetch_assoc($panggil_creatornya)){
+												echo "<div class='col-md-6'><e style='font-size:15px'>".$crtr['nickname']." <a style='color:rgba(0,0,0,0.5);font-size:12px'>".date("d F Y", strtotime($row['created_at']))."</a></e></div></div>";
+												//echo $crtr['name'];
+											}
+										echo'</td>
+										<td width="">
+											<a href="" id="'.$row['id_bahasan'].'" class="btn btn-info btn-sm control_coment" data-toggle="modal" data-target="#modal_comment"><span class="glyphicon glyphicon-comment" aria-hidden="true"></span></a>
+											<a href="" id="'.$row['id_bahasan'].'" class="btn btn-danger btn-sm del" data-toggle="modal" data-target="#modal_del" onclick="delb_f('.$row['id_bahasan'].')"><span class="glyphicon glyphicon-trash" aria-hidden="true"></span></a>
 										</td>
 									</tr>
 								';$x=1;
@@ -139,34 +150,47 @@
 	</div><!-- /.modal-dialog -->
 </div><!-- /.modal -->
 
-<!-- Button trigger modal 2
+<!-- Button trigger modal 2-->
 <div class="modal fade bs-example-modal-lg" id="modal_lihat" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel">
 	  <div class="modal-dialog " role="document">
 		<div class="modal-content">
 		  <div class="modal-header">
 			<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-			<h3 class="modal-title" id="exampleModalLabel">Anggota &raquo; Lihat</h3>
+			<h3 class="modal-title" id="exampleModalLabel">Bahasan</h3>
 		  </div>
 		<div class="cont"></div>
 		  
 		</div> 
 	</div> 
-</div> -->
+</div> 
+<!-- Button trigger modal 2.5-->
+<div class="modal fade bs-example-modal-lg" id="modal_comment" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel">
+	  <div class="modal-dialog " role="document">
+		<div class="modal-content">
+		  <div class="modal-header">
+			<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+			<h3 class="modal-title" id="exampleModalLabel">Daftar komentar</h3>
+		  </div>
+		<div class="comt" ></div>
+		  
+		</div> 
+	</div> 
+</div> 
 
-<!-- Button trigger modal 3
+<!-- Button trigger modal 3 -->
 <div class="modal fade bs-example-modal-lg" id="modal_del" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel">
 	  <div class="modal-dialog " role="document">
 		<div class="modal-content">
 		  <div class="modal-header">
 			<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-			<h4 class="modal-title" id="exampleModalLabel">Anggota &raquo; hapus ?</h4>
+			<h4 class="modal-title" id="exampleModalLabel">Bahasan &raquo; hapus ?</h4>
 		  </div>
 		  
-		<div class="vdel"></div>
+		<div class="bfdel"></div>
 		
 		</div> 
 	</div> 
-</div> -->
+</div> 
 
 
 <script src="../js/jquery.min.js"></script>
@@ -210,28 +234,27 @@ $(document).ready(function(){
 		})
 	});
 	
-	$(".view").on('click', function (){
+	$(".view").on('click', function (){  ///////////////////
 		var id	= $(this).attr("id");
 		console.log(id);
 		$.ajax({
 			method	:"POST",
-			url		:"../kontrol/crud_admin/crud_anggota.php",
-			data	:"do=view&id="+id,
+			url		:"../kontrol/crud_admin/crud_forum.php",
+			data	:"crud=view_bahasan&id="+id,
 			success	: function(data){
 					$(".cont").html(data);
 			}
 		})
 	});
-	
-	$(".del").on('click', function (){
+	$(".control_coment").on('click', function (){  ///////////////////
 		var id	= $(this).attr("id");
 		console.log(id);
 		$.ajax({
 			method	:"POST",
-			url		:"../kontrol/crud_admin/crud_anggota.php",
-			data	:"do=view&del=ok&id="+id,
+			url		:"../kontrol/crud_admin/crud_forum.php",
+			data	:"crud=ctrl_comment&id="+id,
 			success	: function(data){
-					$(".vdel").html(data);
+					$(".comt").html(data);
 			}
 		})
 	});
@@ -253,7 +276,22 @@ $(document).ready(function(){
 			}
 		})
 	};
-	
+	function delb_f(id){         //////////////////////////////////////////////////
+			console.log(id);
+			$.ajax({
+				type	:"POST",
+				url		:"../kontrol/crud_admin/crud_forum.php",
+				data	:"crud=delbahasanforum&id="+id,
+				success	: function(data){
+						$(".bfdel").html(data);
+						//$('#modal_category').modal('toggle');
+						//$("#modal_alert").html("<div class='alert alert-success' role='alert'>Category Berhasil Dirubah</div>");
+						//$("#modal_fcategory").modal('hide');
+												//location.reload();
+
+				}
+			})
+		};	
 function del(id){
 		$.ajax({
 			type	:"POST",

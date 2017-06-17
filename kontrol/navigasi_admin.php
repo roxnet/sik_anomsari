@@ -81,5 +81,12 @@
 		if($_GET['private_chat']=='yes'){
 			include_once "crud_admin/CRUDanggota/private_chat.php";
 	}}
+	
+	
+	
+	else if(isset($_GET['pengumuman'])){   ///Pengumuman
+					if($_GET['pengumuman']=='yes'){
+						include_once "crud_admin/pengumuman.php";
+				}} 
 
 ?>

@@ -2,34 +2,36 @@
 	include_once "../connt.php";
 	include ('../kontrol/session_cekker.php');
 	$id = $_SESSION['id_user'];
-	$set = mysqli_query($koneksi, "SELECT * FROM anggota WHERE id_anggota = $id");
+$setprofile = mysqli_query($koneksi, "SELECT * FROM anggota WHERE id_anggota = $id");
+	while($ppppp= mysqli_fetch_assoc($setprofile)){
+		$profil=$ppppp['profil'];
+		
+	}
 ?>
 <div class="row">
-<div class="col-sm-12">
-<?php while($row= mysqli_fetch_assoc($set)){
+	
+								
+</div>
+	<div class="row" style="margin-bottom:50px">
+<?php 
+	$set = mysqli_query($koneksi, "SELECT * FROM anggota WHERE id_anggota = $id");
+	while($row= mysqli_fetch_assoc($set)){
 	$set2 = mysqli_query($koneksi, "SELECT * FROM phone_number WHERE id_anggota = $id");
+	$set3 = mysqli_query($koneksi, "SELECT * FROM data_diri WHERE id_anggota = $id");
+	while($dir = mysqli_fetch_assoc($set3)){
+		$ayah = $dir['ayah'];
+		$ibu = $dir['ibu'];
+		$pasangan = $dir['pasangan'];
+		$life = $dir['life'];
+	}
 	echo '
-
-		<form id="edit_form" class="form-horizontal">';
-	echo '	<input type="hidden" name="id" value="'.$id.'">
-				<div class="form-group col-xs-12">
-					<label class="control-label col-xs-3">Keluarga</label>
-					<div class="col-xs-8">
-						<select class="form-control" name="id_keluarga" required>';
-								$Query = mysqli_query($koneksi, "SELECT * FROM keluarga" );
-									while($prt=mysqli_fetch_assoc($Query)){
-										if($prt['id_keluarga'] == $row['id_keluarga']){
-											echo '<option value="'.$prt['id_keluarga'].'">'.$prt['nama_keluarga'].'</option>';
-										}
-										else if($prt['id_keluarga'] != $row['id_keluarga']){
-											echo '<option value="'.$prt['id_keluarga'].'">'.$prt['nama_keluarga'].'</option>';
-										}
-									}
-	echo '				</select>
-					</div>
-				</div>
-
-				<div class="form-group col-xs-12">
+	<!-- <div id="cekout"></div>
+		<form id="edit_form" class="form-horizontal">-->';
+	echo '	<input type="hidden" name="id" value="'.$id.'">	
+							
+				
+		
+				<div class="form-group col-xs-12"><hr/>
 					<label class="col-sm-3 control-label">Nama panggilan</label>
 					<div class="col-sm-8">
 						<input type="text" name="nickname" class="form-control" value="'.$row["nickname"].'" placeholder="masukkan nama panggilan " required>
@@ -55,7 +57,7 @@
 	echo '				</select>
 					</div>
 				</div>
-				<div class="form-group col-xs-12">
+				<div class="form-group col-xs-12">		
 				<label class="col-sm-3 control-label">Golongan darah</label>
 					<div class="col-sm-8">
 						<select name="bloodtype" class="form-control" required>
@@ -64,7 +66,7 @@
 	if($row["bloodtype"] !== "B") echo'	<option value="B">B</option>';
 	if($row["bloodtype"] !== "O") echo'	<option value="O">O</option>';
 	if($row["bloodtype"] !== "AB") echo' <option value="AB">AB</option>';
-
+	
 	echo '				</select>
 					</div>
 				</div>
@@ -80,37 +82,95 @@
 							<input type="text" name="birthdate" id="datepicker" class="form-control" value="'.$row["birthdate"].'" data-date-format="yyyy-mm-dd" placeholder=" Tahun-Bulan-Tanggal" required>
 					</div>
 				</div>
+				<div class="form-group col-xs-12"><hr/>
+					<label class="control-label col-xs-3">Keluarga</label>
+					<div class="col-xs-8">
+						<select class="form-control" name="id_keluarga" required>';							
+								$Query = mysqli_query($koneksi, "SELECT * FROM keluarga" );
+									while($prt=mysqli_fetch_assoc($Query)){
+										if($prt['id_keluarga'] == $row['id_keluarga']){
+											echo '<option value="'.$prt['id_keluarga'].'">'.$prt['nama_keluarga'].'</option>';									
+										}
+										else if($prt['id_keluarga'] != $row['id_keluarga']){
+											echo '<option value="'.$prt['id_keluarga'].'">'.$prt['nama_keluarga'].'</option>';
+										}
+									}
+	echo '				</select>
+					</div>
+				</div>
+				
+								<div class="form-group col-xs-12">
+										<label class="col-sm-3 control-label">Nama ayah</label>
+											<div class="col-sm-8">
+												<input type="text" name="ayah" class="form-control" placeholder="nama lengkap ayah  " value="'.$ayah.'" required>
+											</div>
+								</div>
+											
+								<div class="form-group col-xs-12">
+										<label class="col-sm-3 control-label">Nama ibu</label>
+											<div class="col-sm-8">
+												<input type="text" name="ibu" class="form-control" placeholder="nama lengkap ibu " value="'.$ibu.'" required>
+											</div>
+								</div>
+				
+							
+								<div class="form-group col-xs-12" id="pasangan" >
+									<label class="col-sm-3 control-label">Nama Suami/Istri</label>
+										<div class="col-sm-8">
+											<input type="text" name="pasangan" class="form-control" value="'.$pasangan.'" placeholder="Belum menikah" >
+										</div>
+								</div>
+				
 				<div class="form-group col-xs-12">
 					<label class="col-sm-3 control-label">Alamat</label>
 					<div class="col-sm-8">
 						<textarea rows="3" name="adress" class="form-control" placeholder="Alamat Sekarang">'.$row["address"].'</textarea>
 					</div>
 				</div>
-				<div class="form-group col-xs-12"><hr/>
+				
+						<!--	<div class="form-group col-xs-12" style="display:none"><hr/>
+								  <label class="col-sm-3 control-label">Life status</label>
+									<div class="col-sm-8">
+										<select id="deathlife" name="deathlife"class="form-control" form="add_form"required>
+				';							if($life=="life"){
+												echo '<option value="life">Life</option>
+													<option value="death">Passed away</option>';
+											}
+												else echo'<option value="death">Passed away</option>
+														<option value="life">Life</option>';
+												
+	echo'								</select>
+									</div>
+									
+								</div>-->
+								<div class="form-group col-xs-12"><hr/></div>
+		<div id="accn">	
+				<div class="form-group col-xs-12">
 					<label class="col-sm-3 control-label">Pekerjaan</label>
 					<div class="col-sm-8">
-						<input type="text" name="job" class="form-control" placeholder="Pekerjaan" value="'.$row["job"].'" required>
+						<input type="text" name="job" class="form-control" placeholder="Pekerjaan" value="'.$row["job"].'" >
 					</div>
 				</div>
-
+				
 				<div class="form-group col-xs-12">
 					<label class="col-sm-3 control-label">Nomor telepon</label>
 					<div class="col-sm-8">';
 					$x=0;
 					while($row2= mysqli_fetch_assoc($set2)){
-	echo'					<input type="text" name="phonenumber" class="form-control" placeholder="Masukkan no Telepon "  value="'.$row2["phone_number"].'" required>';
+	echo'					<input type="text" name="phonenumber" class="form-control" placeholder="Masukkan no Telepon "  value="'.$row2["phone_number"].'" >';
 							$x=1;
 					}if($x==0){
-	echo'					<input type="text" name="phonenumber" class="form-control" placeholder="Masukkan no Telepon "  required>';
-					}
+	echo'					<input type="text" name="phonenumber" class="form-control" placeholder="Masukkan no Telepon "  >';
+					}	
 	echo'		</div>
-				</div>
+				</div>				
 				<div class="form-group col-xs-12">
 					<label class="col-sm-3 control-label">Email</label>
 					<div class="col-sm-8">
-						<input type="email" name="email" class="form-control" placeholder="Masukkan email " value="'.$row["email"].'" required>
+						<input type="email" name="email" class="form-control" placeholder="Masukkan email " value="'.$row["email"].'" >
 					</div>
 				</div>
+		<!--<div style="display:none">
 				<div class="form-group col-xs-12">
 					<label class="col-sm-3 control-label">Password</label>
 					<div class="col-sm-8">
@@ -123,14 +183,134 @@
 						<input type="password" name="pass2" class="form-control" placeholder="Konfirmasi Password " value="'.$row["password"].'">
 					</div>
 				</div>
-
+		</div>	
+				<div class="form-group col-xs-12" style="display:none"><hr/>
+				<label class="control-label col-xs-3">Level anggota</label>
+					<div class="col-xs-8">
+      					<select class="form-control" name="level" required>';
+						if($row["level_user"]=="admin"){
+						echo '	<option value="1">Admin</option>
+      							<option value="2">User</option>';
+						}else {
+							echo '	<option value="2">User</option>
+									<option value="1">Admin</option>';
+						}
+    echo '				</select>
+					</div>
+				</div>-->
+		</div>		<div class="form-group col-xs-12"><hr/></div>
+				
+	
 			<label class="col-sm-3 control-label">&nbsp;</label>
-				<button type="reset" class="btn btn-danger" >Clear</button>&nbsp;&nbsp;&nbsp;
-				<button type="button" id="edt" class="btn btn-primary" onclick="edit()" >Simpan</button>
+				<!--button type="reset" class="btn btn-danger" >Clear</button-->
+				<button type="button" id="edt" class="btn btn-primary" onclick="edit()">Simpan</button>
 
 			<!--<input type="submit" id="edit_anggota" class="btn btn-sm btn-primary" data-toggle="tooltip" name="aksi" value="tambah" title="Simpan Data anggota">-->
-		</form>';
+		<!--</form>-->';
 	}
 ?>
+
+					  
+					  <!--MODAL EDIT PROFIL PICTURE-->
+					  	<div class="modal fade" id="editProfilPic" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel">
+						  <div class="modal-dialog" role="document">
+							<div class="modal-content">
+							  <div class="modal-header">
+								<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+								<h4 class="modal-title" id="exampleModalLabel">Foto profil</h4>
+							  </div>
+							  <div class="modal-body" align="center">
+								<div class="row" >
+								
+								
+								</div>
+							  </div>
+							  <div class="modal-footer">
+								<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+								<button type="button" class="btn btn-primary">Send message</button>
+							  </div>
+							</div>
+						  </div>
+						</div>
 </div>
-</div>
+
+
+
+	
+<link href="../js/datepicker/css/bootstrap-datepicker.css" rel="stylesheet">
+<script src="../js/jquery.min.js"></script>
+
+
+<script type="text/javascript">
+$(document).ready(function(){
+	$('#nikah').change(function(){
+			var x = document.getElementById("nikah"); 
+			var select = x.options[x.selectedIndex].value;
+			if(select=="kawin"){
+				
+				$("#pasangan").css("display","block")
+			}	
+		}); 
+	$('#deathlife').change(function(){
+			var x = document.getElementById("deathlife"); 
+			var select = x.options[x.selectedIndex].value;
+			if(select=="death"){
+				
+				$("#accn").css("display","none")
+			}else if(select=="life"){	
+				$("#accn").css("display","block")
+			}		
+		});
+		
+		
+	});	
+
+function back(){
+		window.history.back();
+	};
+function edit(){
+		var id			= $('input[name=id]').val();
+		var email		= $('input[name=email]').val();
+					//var pass1		= $('input[name=pass1]').val();
+					//var pass2		= $('input[name=pass2]').val();
+		var nickname	= $('input[name=nickname]').val();
+		var name		= $('input[name=name]').val();
+		var gender		= $('select[name=gender]').val();
+		var bloodtype	= $('select[name=bloodtype]').val();
+		var birthplace	= $('input[name=birthplace]').val();
+		var birthdate	= $('input[name=birthdate]').val();
+		var id_keluarga	= $('select[name=id_keluarga]').val();
+		var job			= $('input[name=job]').val();
+					//var level		= $('select[name=level]').val();
+		var phonenumber	= $('input[name=phonenumber]').val();
+		var adress		= $('textarea[name=adress]').val();
+		
+		var ayah	= $("input[name=ayah]").val();
+		var ibu		= $("input[name=ibu]").val();
+		var namapasangan= $("input[name=pasangan]").val();
+					//var deathlife = $("select[name=deathlife]").val();
+		console.log(id,email,nickname,name,gender,bloodtype,birthplace,birthdate,id_keluarga,job,phonenumber,adress,ayah,ibu,namapasangan);
+		
+		$.ajax({
+			type	:"POST",
+			url		:"../kontrol/user/ubah_profil.php",
+			data  :"do=edit&id="+id+"&email="+email+"&nickname="+nickname+"&name="+name+"&gender="+gender+"&bloodtype="+bloodtype+"&birthplace="+birthplace+"&birthdate="+birthdate+"&id_keluarga="+id_keluarga+"&job="+job+"&phonenumber="+phonenumber+"&adress="+adress+"&ayah="+ayah+"&ibu="+ibu+"&namapasangan="+namapasangan,
+			success	: function(data){
+				 window.location.href = "layout_user.php?tentang=yes"; 
+				// $('#cekout').html(data);
+			}
+		})
+}
+</script>
+
+
+
+	<!-- JS -->
+	<script src="../js/bootstrap-datepicker.js"></script>
+	<script>
+	$('#datepicker').datepicker({
+		format: 'yyyy-mm-dd',
+		clearBtn: true,
+		autoclose: true
+	})
+</script>

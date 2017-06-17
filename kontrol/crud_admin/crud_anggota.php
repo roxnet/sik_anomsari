@@ -72,7 +72,7 @@ session_start();
 					} else{ // mengecek jika password yang diinput tidak sama
 						echo '<div class="alert alert-danger alert-dismissable"><button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>Password Tidak sama!</div>'; // maka tampilkan 'Password Tidak sama!'
 					}
-						$update = mysqli_query($koneksi, "UPDATE anggota SET email='$email', password='$password', nickname='$nickname', name='$name', gender='$gender', bloodtype='$bloodtype', birthplace='$birthplace', birthdate='$birthdate', address='$adress', id_keluarga='$id_keluarga', job='$job', level_user='$level' 
+						$update = mysqli_query($koneksi, "UPDATE anggota SET email='$email', nickname='$nickname', name='$name', gender='$gender', bloodtype='$bloodtype', birthplace='$birthplace', birthdate='$birthdate', address='$adress', id_keluarga='$id_keluarga', job='$job', level_user='$level' 
 															WHERE id_anggota ='$id'") or die(mysqli_error()); // query untuk menambahkan data ke dalam database
 						$userid = mysqli_insert_id($koneksi);
 						

@@ -1,6 +1,6 @@
 <?php
 	include_once "../connt.php";
-	include_once ('../kontrol/session_cekker.php');
+	
 ?><!--
 <div class="row">
 	<div class="col-lg-12">
@@ -55,6 +55,7 @@
 						<th>Forum</th>
 						<th>by</th>
 						<th>Created at</th>
+						<th>Status</th>
 						<th>Aksi</th>
 					</tr>
 					<?php
@@ -67,12 +68,15 @@
 							$no = 1; // mewakili data dari nomor 1
 							while($row = mysqli_fetch_assoc($sql)){ // fetch query yang sesuai ke dalam array
 								//if($row['status']=="aktif"){
+								$creator = mysqli_query($koneksi,"SELECT * FROM anggota WHERE id_anggota = '".$row['id_creator']."' ");
+								$by_creator = mysqli_fetch_array($creator);
 								echo '
 								<tr>
 									<td>'.$no.'</td>
-									<td width="35%"><a href="admin_layout.php?Threads=yes&id='.$row['id_forum'].'" >'.$row['forum'].'</a></td>
-									<td width="25%"></td>
-									<td width="20%">'.$row['created_at'].'</td>
+									<td width="35%"><a href="admin_layout.php?Threads=yes&id='.$row['id_forum'].'" >'.$row['judul_forum'].'</a></td>
+									<td width="20%">'.$by_creator["name"].'</td>
+									<td width="15%">'.date("d F Y", strtotime($row['created_at'])).'</td>
+									<td width="15%">'.$row['status'].'</td>
 									<td width="20%">
 										
 										<a href="" data-toggle="modal" class="btn btn-primary btn-sm editf" data-target="#modal_editforum" onclick="edit('.$row['id_forum'].')"><span class="glyphicon glyphicon-edit" aria-hidden="true"></span></a>
@@ -108,7 +112,7 @@
 			<div class="row">
 				<form>
 				  <div class="form col-md-12">
-						<input type="hidden" name="creator">
+						<input type="hidden" name="creator" value="<?php echo $_SESSION['id_user']; ?>">
 					  <div class="form-group col-md-12">
 						<?php $query=mysqli_query($koneksi,"select * from fcategory"); ?>
 						<select class="form-control" name="addfk" id="addfk">
