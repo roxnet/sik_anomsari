@@ -34,15 +34,25 @@ ul li {
 #container {
 	max-width: 600px;
 	min-width: 420px;
-	min-height: 100px;
+	min-height: 550px;
 	margin: 1.5em auto;
 	padding: 1em;
 	background: #fff;
-	border: 1px solid #D8D8D8;
+	/*border: 1px solid #D8D8D8;*/
 	-webkit-box-shadow: 0 1px 4px rgba(0, 0, 0, .065);
 	-moz-box-shadow: 0 1px 4px rgba(0,0,0,.065);
 	box-shadow: 0 1px 4px rgba(0, 0, 0, .065);
 }
+
+#box {
+	border: 1px solid #D8D8D8;
+	padding:50px
+} 
+
+.modal-body {
+	min-height:400px;
+}
+
 .logo {
 	margin: 5px 0 0; 
 	color: #0976a5;
