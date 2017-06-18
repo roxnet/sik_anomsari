@@ -10,6 +10,7 @@ if(isset($_GET['id'])){
         INNER JOIN message b ON a.id_pesan=b.id_message
         WHERE a.id_pesan=$id_chat
 		");
+	
 	$hitung=mysqli_num_rows($pesan_query);
 	echo "<input type='hidden' value='$hitung' id='hitung'>";
 	if(mysqli_num_rows($pesan_query)!=0){	
@@ -33,9 +34,32 @@ if(isset($_POST['send_chat'])){
 		VALUES ('$reply','$id_pengirim','$date','$id_pesan');
 		");
 	
-
-	
 }
 
+if (isset($_POST['new_message'])){
+	$id_pengirim=$_POST['id_pengirim'];
+	$id_penerima=$_POST['id_penerima'];
+
+            $date=date("Y-m-d H:i:s");
+             $cek_chat=mysqli_query($koneksi,"
+                                        SELECT id_message
+                                        FROM message
+                                        WHERE  (user_one=$id_pengirim AND user_two=$id_penerima)
+                                        OR (user_two=$id_pengirim AND user_one=$id_penerima);
+                                        ");
+            if(mysqli_num_rows($cek_chat)==NULL){
+                mysqli_query($koneksi,"INSERT INTO message(user_one,user_two,date)
+                    VALUES ($id_pengirim,$id_penerima,'$date')");
+
+                 $newdata=mysqli_fetch_assoc($cek_chat);
+                 echo $newdata['id_message'];
+            }
+            else{
+            	 $newdata=mysqli_fetch_assoc($cek_chat);
+                 echo $newdata['id_message'];
+            }
+
+
+}
 
 ?>
