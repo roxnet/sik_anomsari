@@ -99,7 +99,9 @@
                                           }
                                       }
                                     ?>
-
+                            <li class="message-footer">
+                            <a href="layout_admin.php?private_chat=yes">Read All New Messages</a>
+                        </li>
                                    
                              
                         

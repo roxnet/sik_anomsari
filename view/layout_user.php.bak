@@ -74,7 +74,7 @@ $pengumuman = mysqli_query($koneksi,"SELECT *
                             <a class="menup" href="layout_user.php?notif=yes">Home</a>
                         </li>
                         <li>
-                            <a class="menup" href="layout_blog.php?home=yes">Blog</a>
+                            <a class="menup" href="layout_user.php?blog=yes">Blog</a>
                         </li>
                         <li>
                             <a class="menup" href="layout_user.php?forum=yes">Forum</a>
